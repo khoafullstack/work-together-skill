@@ -1,0 +1,740 @@
+<!doctype html>
+<html lang="{{lang}}" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{page_title}}</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-alt: #f1f5f9;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --border-focus: #3b82f6;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --btn-bg: #f1f5f9;
+      --btn-hover: #e2e8f0;
+      --card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+      --font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --surface-alt: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --border-focus: #60a5fa;
+      --primary: #3b82f6;
+      --primary-hover: #60a5fa;
+      --btn-bg: #334155;
+      --btn-hover: #475569;
+      --card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.5;
+      padding: 2rem 1rem 5rem 1rem;
+      transition: background-color 0.2s, color 0.2s;
+    }
+
+    .wt-theme-toggle {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      z-index: 100;
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 9999px;
+      width: 2.5rem;
+      height: 2.5rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.25rem;
+      box-shadow: var(--card-shadow);
+      transition: all 0.15s;
+    }
+    .wt-theme-toggle:hover {
+      background: var(--btn-hover);
+      transform: scale(1.05);
+    }
+
+    .wt-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .wt-header {
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .wt-header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+    .wt-description {
+      font-size: 1.125rem;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+    }
+    .wt-meta {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    .wt-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    @media (min-width: 1024px) {
+      .wt-layout.has-toc {
+        grid-template-columns: 240px 1fr;
+      }
+    }
+
+    .wt-toc {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+      box-shadow: var(--card-shadow);
+      align-self: start;
+      position: sticky;
+      top: 1rem;
+    }
+    .wt-toc h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+    }
+    .wt-toc ol {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .wt-toc a {
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.9375rem;
+      display: block;
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.375rem;
+      transition: background 0.15s, color 0.15s;
+    }
+    .wt-toc a:hover {
+      background: var(--btn-hover);
+      color: var(--primary);
+    }
+
+    .wt-content {
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+      min-width: 0;
+    }
+
+    .wt-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      box-shadow: var(--card-shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      overflow: hidden;
+    }
+    .wt-card-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+    }
+    .wt-card-head h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .wt-toolbar {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 0.375rem;
+    }
+    .wt-toolbar button {
+      background: var(--btn-bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 0.375rem;
+      padding: 0.25rem 0.625rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .wt-toolbar button:hover {
+      background: var(--btn-hover);
+      color: var(--primary);
+      border-color: var(--border-focus);
+    }
+
+    .wt-viewport {
+      position: relative;
+      width: 100%;
+      min-height: 350px;
+      max-height: 650px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      background: var(--surface-alt);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: grab;
+      user-select: none;
+    }
+    .wt-viewport.is-dragging {
+      cursor: grabbing;
+    }
+
+    .wt-canvas {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform-origin: center center;
+      transition: transform 0.05s ease-out;
+      padding: 1rem;
+    }
+    .wt-canvas svg {
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .wt-caption {
+      font-size: 0.9375rem;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    .wt-source {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      font-family: var(--mono);
+      font-size: 0.8125rem;
+      overflow-x: auto;
+      white-space: pre;
+      margin-top: 0.5rem;
+    }
+
+    .wt-error-banner {
+      color: #ef4444;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: 0.375rem;
+      padding: 1rem;
+      font-family: var(--mono);
+      font-size: 0.8125rem;
+      width: 90%;
+    }
+    [data-theme="dark"] .wt-error-banner {
+      color: #f87171;
+      background: #450a0a;
+      border-color: #7f1d1d;
+    }
+
+    .wt-legend {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 0.875rem 1rem;
+      margin-top: 0.5rem;
+    }
+    .wt-legend h3 {
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+    .wt-legend ul {
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .wt-legend li {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+    }
+    .wt-swatch {
+      width: 1rem;
+      height: 1rem;
+      border-radius: 0.25rem;
+      border: 1px solid var(--border);
+      display: inline-block;
+      flex-shrink: 0;
+    }
+    .wt-legend code {
+      font-family: var(--mono);
+      font-size: 0.8125rem;
+      background: var(--surface);
+      padding: 0.1rem 0.3rem;
+      border-radius: 0.25rem;
+      border: 1px solid var(--border);
+    }
+
+    .wt-notes {
+      border-top: 1px solid var(--border);
+      padding-top: 1rem;
+      margin-top: 0.5rem;
+    }
+    .wt-notes h3 {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    .wt-notes p, .wt-notes ul, .wt-notes ol {
+      font-size: 0.9375rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 0.5rem;
+    }
+    .wt-notes ul, .wt-notes ol {
+      padding-left: 1.5rem;
+    }
+    .wt-component-notes {
+      border-top: 1px solid var(--border);
+      padding-top: 1rem;
+      margin-top: 0.5rem;
+    }
+    .wt-component-notes h3 {
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+    }
+    .wt-component-notes-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .wt-component-note {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--primary);
+      border-radius: 0.5rem;
+      padding: 0.75rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.375rem;
+      transition: all 0.2s;
+    }
+    .wt-component-note:hover, .wt-component-note.is-active {
+      border-color: var(--border-focus);
+      border-left-color: var(--border-focus);
+      background: var(--surface);
+      box-shadow: var(--card-shadow);
+    }
+    .wt-component-note-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .wt-component-link-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 0.375rem;
+      padding: 0.2rem 0.5rem;
+      font-size: 0.8125rem;
+      font-family: var(--mono);
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all 0.15s;
+    }
+    .wt-component-link-btn:hover {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+    }
+    .wt-component-name {
+      color: inherit;
+    }
+    .wt-component-id {
+      opacity: 0.75;
+      font-size: 0.75rem;
+    }
+    .wt-component-note-body {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .wt-component-note-body p {
+      margin-bottom: 0.35rem;
+    }
+    .wt-component-note-body code {
+      font-family: var(--mono);
+      font-size: 0.8125rem;
+      background: var(--surface);
+      padding: 0.1rem 0.3rem;
+      border-radius: 0.25rem;
+      border: 1px solid var(--border);
+    }
+
+    /* Node highlight pulse animation */
+    .wt-node-highlight {
+      filter: drop-shadow(0 0 8px rgba(37, 99, 235, 0.9)) !important;
+      animation: wt-pulse 1.2s infinite alternate ease-in-out;
+    }
+    @keyframes wt-pulse {
+      0% {
+        filter: drop-shadow(0 0 4px rgba(37, 99, 235, 0.6));
+      }
+      100% {
+        filter: drop-shadow(0 0 14px rgba(37, 99, 235, 1));
+      }
+    }
+  </style>
+</head>
+<body>
+  <button class="wt-theme-toggle" data-action="theme" title="Toggle light/dark theme" aria-label="Toggle theme">◐</button>
+
+  <div class="wt-container">
+    <!-- SLOT:HEADER -->
+
+    <div class="wt-layout">
+      <!-- SLOT:TOC -->
+
+      <main class="wt-content">
+        <!-- SLOT:CONTENT -->
+      </main>
+    </div>
+  </div>
+
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+
+    // State management
+    const state = new Map();
+
+    function getCardState(card) {
+      if (!state.has(card)) {
+        state.set(card, { scale: 1, x: 0, y: 0, isDragging: false, startX: 0, startY: 0 });
+      }
+      return state.get(card);
+    }
+
+    function applyTransform(card) {
+      const s = getCardState(card);
+      const canvas = card.querySelector('.wt-canvas');
+      if (canvas) {
+        canvas.style.transform = `translate(${s.x}px, ${s.y}px) scale(${s.scale})`;
+      }
+    }
+
+    // Theme initialization
+    const savedTheme = localStorage.getItem('wt-theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', savedTheme);
+
+    function findDiagramElement(card, targetId) {
+      const svg = card.querySelector('.wt-canvas svg');
+      if (!svg || !targetId) return null;
+      const raw = targetId.trim();
+      const lower = raw.toLowerCase();
+
+      // 1. Partial/Exact ID match
+      const byId = svg.querySelector(`[id*="${raw}"]`) || svg.querySelector(`[id*="${lower}"]`);
+      if (byId) return byId.closest('.node, .actor, .classGroup, .entityBox, g[id]') || byId;
+
+      // 2. Class match
+      const byClass = svg.querySelector(`.${raw}`) || svg.querySelector(`.${lower}`);
+      if (byClass) return byClass.closest('.node, .actor, .classGroup, .entityBox, g') || byClass;
+
+      // 3. Search groups for text match
+      const groups = svg.querySelectorAll('.node, .actor, .classGroup, .entityBox, g');
+      for (const g of groups) {
+        const text = g.textContent.trim().toLowerCase();
+        if (text.includes(lower) || text === lower) {
+          return g;
+        }
+      }
+      return null;
+    }
+
+    function highlightComponent(card, targetId, noteElement) {
+      card.querySelectorAll('.wt-node-highlight').forEach(el => el.classList.remove('wt-node-highlight'));
+      card.querySelectorAll('.wt-component-note.is-active').forEach(el => el.classList.remove('is-active'));
+
+      if (noteElement) {
+        noteElement.classList.add('is-active');
+      }
+
+      const targetNode = findDiagramElement(card, targetId);
+      if (targetNode) {
+        targetNode.classList.add('wt-node-highlight');
+
+        const viewport = card.querySelector('.wt-viewport');
+        const s = getCardState(card);
+        if (viewport && targetNode.getBoundingClientRect) {
+          const vRect = viewport.getBoundingClientRect();
+          const nRect = targetNode.getBoundingClientRect();
+          const currentCenterX = nRect.left + nRect.width / 2;
+          const currentCenterY = nRect.top + nRect.height / 2;
+          const targetCenterX = vRect.left + vRect.width / 2;
+          const targetCenterY = vRect.top + vRect.height / 2;
+
+          s.x += (targetCenterX - currentCenterX);
+          s.y += (targetCenterY - currentCenterY);
+          applyTransform(card);
+        }
+      }
+    }
+
+    function attachCardLinking(card) {
+      // Note button clicks
+      card.querySelectorAll('.wt-component-note').forEach(note => {
+        const targetId = note.getAttribute('data-target');
+        const btn = note.querySelector('.wt-component-link-btn') || note;
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          highlightComponent(card, targetId, note);
+        });
+      });
+
+      // SVG node clicks
+      const svg = card.querySelector('.wt-canvas svg');
+      if (svg) {
+        const nodes = svg.querySelectorAll('.node, .actor, .classGroup, .entityBox');
+        nodes.forEach(node => {
+          node.style.cursor = 'pointer';
+          node.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const nodeText = node.textContent.trim().toLowerCase();
+            const notes = card.querySelectorAll('.wt-component-note');
+            for (const note of notes) {
+              const target = (note.getAttribute('data-target') || '').trim().toLowerCase();
+              if (target && (nodeText.includes(target) || (node.id && node.id.toLowerCase().includes(target)))) {
+                notes.forEach(n => n.classList.remove('is-active'));
+                note.classList.add('is-active');
+                note.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                highlightComponent(card, target, note);
+                break;
+              }
+            }
+          });
+        });
+      }
+    }
+
+    async function renderAllDiagrams() {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      mermaid.initialize({
+        startOnLoad: false,
+        securityLevel: 'strict',
+        theme: isDark ? 'dark' : 'default',
+        htmlLabels: false,
+        fontFamily: 'system-ui, -apple-system, sans-serif'
+      });
+
+      const cards = document.querySelectorAll('.wt-card');
+      for (const card of cards) {
+        const sourceElem = card.querySelector('.wt-source');
+        const canvas = card.querySelector('.wt-canvas');
+        if (!sourceElem || !canvas) continue;
+
+        const code = sourceElem.textContent.trim();
+        const renderId = 'svg-' + (card.id || Math.random().toString(36).substring(2, 9));
+
+        try {
+          const { svg } = await mermaid.render(renderId, code);
+          canvas.innerHTML = svg;
+          const svgElem = canvas.querySelector('svg');
+          if (svgElem) {
+            svgElem.removeAttribute('height');
+            svgElem.style.maxHeight = '100%';
+            svgElem.style.width = '100%';
+          }
+          attachCardLinking(card);
+        } catch (err) {
+          canvas.innerHTML = `<div class="wt-error-banner"><strong>Mermaid Render Error:</strong><br>${escapeHtml(err.message || String(err))}</div>`;
+          console.error('Mermaid render error for card #' + card.id, err);
+        }
+      }
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // Check TOC presence and adjust layout class
+    if (document.querySelector('.wt-toc')) {
+      document.querySelector('.wt-layout')?.classList.add('has-toc');
+    }
+
+    // Attach card event handlers (zoom, pan, toolbar actions)
+    document.querySelectorAll('.wt-card').forEach(card => {
+      const viewport = card.querySelector('.wt-viewport');
+      const s = getCardState(card);
+
+      // Pan & drag
+      if (viewport) {
+        viewport.addEventListener('mousedown', (e) => {
+          if (e.button !== 0) return;
+          s.isDragging = true;
+          s.startX = e.clientX - s.x;
+          s.startY = e.clientY - s.y;
+          viewport.classList.add('is-dragging');
+        });
+
+        window.addEventListener('mousemove', (e) => {
+          if (!s.isDragging) return;
+          s.x = e.clientX - s.startX;
+          s.y = e.clientY - s.startY;
+          applyTransform(card);
+        });
+
+        window.addEventListener('mouseup', () => {
+          if (s.isDragging) {
+            s.isDragging = false;
+            viewport.classList.remove('is-dragging');
+          }
+        });
+
+        // Wheel zoom
+        viewport.addEventListener('wheel', (e) => {
+          e.preventDefault();
+          const zoomFactor = e.deltaY < 0 ? 1.15 : 0.85;
+          s.scale = Math.min(Math.max(0.2, s.scale * zoomFactor), 5);
+          applyTransform(card);
+        }, { passive: false });
+      }
+
+      // Toolbar buttons
+      card.querySelectorAll('.wt-toolbar button').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const action = btn.getAttribute('data-action');
+          if (action === 'zoom-in') {
+            s.scale = Math.min(5, s.scale * 1.25);
+            applyTransform(card);
+          } else if (action === 'zoom-out') {
+            s.scale = Math.max(0.2, s.scale * 0.8);
+            applyTransform(card);
+          } else if (action === 'zoom-reset') {
+            s.scale = 1;
+            s.x = 0;
+            s.y = 0;
+            applyTransform(card);
+          } else if (action === 'toggle-source') {
+            const src = card.querySelector('.wt-source');
+            if (src) {
+              src.hidden = !src.hidden;
+            }
+          } else if (action === 'copy') {
+            const src = card.querySelector('.wt-source');
+            if (src) {
+              navigator.clipboard.writeText(src.textContent.trim()).then(() => {
+                const originalText = btn.textContent;
+                btn.textContent = 'Copied!';
+                setTimeout(() => { btn.textContent = originalText; }, 2000);
+              });
+            }
+          } else if (action === 'export-svg') {
+            const svg = card.querySelector('.wt-canvas svg');
+            if (!svg) return;
+            const svgData = new XMLSerializer().serializeToString(svg);
+            const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${card.id || 'diagram'}.svg`;
+            link.click();
+            URL.revokeObjectURL(url);
+          } else if (action === 'export-png') {
+            const svg = card.querySelector('.wt-canvas svg');
+            if (!svg) return;
+            const svgData = new XMLSerializer().serializeToString(svg);
+            const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+            const URLObj = window.URL || window.webkitURL || window;
+            const blobURL = URLObj.createObjectURL(svgBlob);
+            const img = new Image();
+            img.onload = () => {
+              const canvas = document.createElement('canvas');
+              const scale = 2; // 2x high-resolution
+              const bbox = svg.getBoundingClientRect();
+              canvas.width = (bbox.width || 800) * scale;
+              canvas.height = (bbox.height || 600) * scale;
+              const ctx = canvas.getContext('2d');
+              const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+              ctx.fillStyle = isDark ? '#1e293b' : '#ffffff';
+              ctx.fillRect(0, 0, canvas.width, canvas.height);
+              ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+              canvas.toBlob((blob) => {
+                if (!blob) return;
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `${card.id || 'diagram'}.png`;
+                link.click();
+                URL.revokeObjectURL(link.href);
+              }, 'image/png');
+              URLObj.revokeObjectURL(blobURL);
+            };
+            img.src = blobURL;
+          }
+        });
+      });
+    });
+
+    // Theme toggle button
+    document.querySelector('.wt-theme-toggle')?.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('wt-theme', next);
+      renderAllDiagrams();
+    });
+
+    // Initial render
+    renderAllDiagrams();
+  </script>
+</body>
+</html>

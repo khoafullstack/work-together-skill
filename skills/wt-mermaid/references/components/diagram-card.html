@@ -1,0 +1,22 @@
+<section class="wt-card" id="{{diagram_id}}">
+  <div class="wt-card-head">
+    <h2>{{diagram_title}}</h2>
+    <div class="wt-toolbar">
+      <button type="button" data-action="zoom-in" title="Zoom in">+</button>
+      <button type="button" data-action="zoom-out" title="Zoom out">−</button>
+      <button type="button" data-action="zoom-reset" title="Reset view">⟲</button>
+      <button type="button" data-action="toggle-source" title="Toggle Mermaid source">Source</button>
+      <button type="button" data-action="copy" title="Copy Mermaid source">Copy</button>
+      <button type="button" data-action="export-svg" title="Export as SVG">SVG</button>
+      <button type="button" data-action="export-png" title="Export as PNG">PNG</button>
+    </div>
+  </div>
+  <div class="wt-viewport">
+    <div class="wt-canvas"></div>
+  </div>
+  <p class="wt-caption">{{caption}}</p>
+  <pre class="wt-source" hidden>{{mermaid_code}}</pre>
+  <!-- SLOT:LEGEND -->
+  <!-- SLOT:COMPONENT_NOTES -->
+  <!-- SLOT:NOTES -->
+</section>

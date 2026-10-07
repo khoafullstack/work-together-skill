@@ -12,6 +12,7 @@ All skills are user-invoked: you type the skill name, and no skill triggers on i
 | `/wt-plan` | Turn a request or an existing `plan.md` into a confirmed plan | `work-together/tasks/<task-slug>/plan.md` |
 | `/wt-break-tasks` | Break a confirmed plan into a checklist of file-level tasks | `work-together/tasks/<task-slug>/tasks.md` |
 | `/wt-implement` | Implement the tasks, verifying after every parent task | Code changes, updated `tasks.md` |
+| `/wt-mermaid` | Turn a request into Mermaid diagrams rendered as a standalone interactive HTML page | `work-together/diagrams/<slug>.html` |
 
 ## Workflow
 
@@ -24,6 +25,8 @@ All skills are user-invoked: you type the skill name, and no skill triggers on i
    │
 /wt-implement       implement, verify, close each parent task
 ```
+
+`/wt-mermaid` runs independently on demand whenever architecture or workflow visualizations are requested.
 
 Every step that writes a file shows a draft first and waits for your confirmation.
 
@@ -42,8 +45,14 @@ skills/
 ├─ wt-break-tasks/
 │  ├─ SKILL.md
 │  └─ templates/        tasks.md
-└─ wt-implement/
-   └─ SKILL.md
+├─ wt-implement/
+│  └─ SKILL.md
+└─ wt-mermaid/
+   ├─ SKILL.md
+   ├─ references/
+   │  ├─ syntax/        flowchart.md, sequence.md, class.md, state.md, er.md
+   │  ├─ components/    shell.html, header.html, toc.html, diagram-card.html, ...
+   │  └─ examples/      sample.html
 ```
 
 Generated files, for a workspace with `backend`, `frontend`, and `worker` projects:
@@ -56,10 +65,12 @@ work-together/
 │  │  └─ memory.md
 │  ├─ frontend/
 │  └─ worker/
-└─ tasks/
-   └─ <task-slug>/
-      ├─ plan.md
-      └─ tasks.md
+├─ tasks/
+│  └─ <task-slug>/
+│     ├─ plan.md
+│     └─ tasks.md
+└─ diagrams/
+   └─ <slug>.html
 ```
 
 Paths are relative to the workspace root. The workspace can be a monorepo, or a folder that holds several repositories.
