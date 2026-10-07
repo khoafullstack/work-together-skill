@@ -12,6 +12,8 @@ All skills are user-invoked: you type the skill name, and no skill triggers on i
 | `/wt-plan` | Turn a request or an existing `plan.md` into a confirmed plan | `work-together/tasks/<task-slug>/plan.md` |
 | `/wt-break-tasks` | Break a confirmed plan into a checklist of file-level tasks | `work-together/tasks/<task-slug>/tasks.md` |
 | `/wt-implement` | Implement the tasks, verifying after every parent task | Code changes, updated `tasks.md` |
+| `/wt-learn` | Record lessons from the conversation, related commits, and the user into each project's memory | `Lessons` in `work-together/projects/<project>/memory.md` |
+| `/wt-archive` | Move finished task folders into the archive, recording lessons first | `work-together/archive/<YYYY-MM-DD>-<task-slug>/` |
 | `/wt-mermaid` | Turn a request into Mermaid diagrams rendered as a standalone interactive HTML page | `work-together/diagrams/<slug>.html` |
 
 ## Workflow
@@ -24,8 +26,11 @@ All skills are user-invoked: you type the skill name, and no skill triggers on i
 /wt-break-tasks     draft tasks, confirm, write tasks.md
    │
 /wt-implement       implement, verify, close each parent task
+   │
+/wt-archive         record lessons (via wt-learn), mark plan Archived, move folder
 ```
 
+`/wt-learn` can also run standalone on demand to capture learnings from any conversation.
 `/wt-mermaid` runs independently on demand whenever architecture or workflow visualizations are requested.
 
 Every step that writes a file shows a draft first and waits for your confirmation.
@@ -46,6 +51,10 @@ skills/
 │  ├─ SKILL.md
 │  └─ templates/        tasks.md
 ├─ wt-implement/
+│  └─ SKILL.md
+├─ wt-learn/
+│  └─ SKILL.md
+├─ wt-archive/
 │  └─ SKILL.md
 └─ wt-mermaid/
    ├─ SKILL.md
@@ -69,6 +78,10 @@ work-together/
 │  └─ <task-slug>/
 │     ├─ plan.md
 │     └─ tasks.md
+├─ archive/
+│  └─ <YYYY-MM-DD>-<task-slug>/
+│     ├─ plan.md
+│     └─ tasks.md
 └─ diagrams/
    └─ <slug>.html
 ```
@@ -78,11 +91,12 @@ Paths are relative to the workspace root. The workspace can be a monorepo, or a 
 ## Design rules
 
 - **Fixed templates.** Every generated file is filled from a template shipped with the skill. The agent never invents the structure.
-- **One project, one folder.** `project.md` holds what the project is and how to build, run, and verify it. `memory.md` holds conventions and short-term notes.
+- **One project, one folder.** `project.md` holds what the project is and how to build, run, and verify it. `memory.md` holds conventions, lessons, and short-term notes.
 - **Confirm before writing.** Plans, task lists, and project facts are shown first and written only after you approve.
 - **Stop on deviation.** `/wt-implement` stops and asks when reality differs from the plan.
 - **Green after every parent task.** Tests, typecheck, and lint must pass before a parent task is marked done.
 - **No commits without consent.** `/wt-implement` asks once whether it may commit, and never commits without a clear yes.
+- **Archive moves, never deletes.** `/wt-archive` uses `git mv` when the folder is tracked and never commits.
 
 ## Task list syntax
 
@@ -98,4 +112,4 @@ Statuses: `[ ]` todo, `[~]` in progress, `[x]` done, `[!]` blocked.
 
 ## Installation
 
-Copy or symlink the folders under `skills/` into your agent's skills directory, for example `~/.agents/skills/`.
+Copy or symlink the folders under `skills/` into your agent's skills directory, for example `~/.agents/skills/`. Keep `wt-archive` and `wt-learn` in the same directory so `wt-archive` can reference `wt-learn`.

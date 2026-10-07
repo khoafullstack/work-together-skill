@@ -2,8 +2,9 @@
 
 - **Slug:** <task-slug>
 - **Projects:** <project-name, ...> (folder names under ./work-together/projects/)
-- **Status:** Draft | Confirmed
+- **Status:** Draft | Confirmed | Archived
 - **Created:** <YYYY-MM-DD>
+- **Archived:** <YYYY-MM-DD, set by /wt-archive; N/A until then>
 
 ## 1. Goal
 

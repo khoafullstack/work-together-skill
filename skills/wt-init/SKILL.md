@@ -43,6 +43,6 @@ Done when every section of every project's two files is filled from evidence or 
 
 Write both files for each project.
 
-Files already exist: update in place. Show every fact that would change and ask before changing it. Keep the content of the Notes sections in both files untouched.
+Files already exist: update in place. Show every fact that would change and ask before changing it. Keep the content of the Notes sections in both files and the Lessons section of `memory.md` untouched.
 
 Done when both files exist for every confirmed project.
