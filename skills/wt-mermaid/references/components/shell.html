@@ -240,6 +240,28 @@
       display: block;
     }
 
+    /* Conditional-branch edge labels sit on top of the connector line, so they
+       need their own readable chip. Give the label a background-colored halo and
+       force the chip + text onto the page theme, in both light and dark mode. */
+    .wt-canvas .edgeLabel rect,
+    .wt-canvas .edgeLabel .labelBkg {
+      fill: var(--surface-alt) !important;
+      opacity: 1 !important;
+    }
+    .wt-canvas .edgeLabel text,
+    .wt-canvas .edgeLabel tspan {
+      fill: var(--text) !important;
+      stroke: var(--surface-alt);
+      stroke-width: 3px;
+      stroke-linejoin: round;
+      paint-order: stroke;
+    }
+    .wt-canvas .edgeLabel span,
+    .wt-canvas .edgeLabel div {
+      color: var(--text) !important;
+      background: var(--surface-alt) !important;
+    }
+
     .wt-caption {
       font-size: 0.9375rem;
       color: var(--text-muted);
@@ -572,6 +594,9 @@
         startOnLoad: false,
         securityLevel: 'strict',
         theme: isDark ? 'dark' : 'default',
+        themeVariables: isDark
+          ? { edgeLabelBackground: '#334155', textColor: '#f8fafc' }
+          : { edgeLabelBackground: '#f1f5f9', textColor: '#0f172a' },
         htmlLabels: false,
         fontFamily: 'system-ui, -apple-system, sans-serif'
       });
@@ -595,6 +620,7 @@
             svgElem.style.width = '100%';
           }
           attachCardLinking(card);
+          fixLabelContrast(card);
         } catch (err) {
           canvas.innerHTML = `<div class="wt-error-banner"><strong>Mermaid Render Error:</strong><br>${escapeHtml(err.message || String(err))}</div>`;
           console.error('Mermaid render error for card #' + card.id, err);
@@ -604,6 +630,99 @@
 
     function escapeHtml(str) {
       return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // --- Label contrast safety net -------------------------------------------
+    // Mermaid paints node labels with the theme text color unless the diagram
+    // sets an explicit `color` in classDef/style. A light theme color on a light
+    // custom fill (or the reverse in dark mode) becomes unreadable, so any node
+    // label below the contrast floor is switched to black or white, whichever
+    // reads better on its own node background.
+    const MIN_LABEL_CONTRAST = 3;
+
+    function parseColor(value) {
+      if (!value) return null;
+      const str = String(value).trim();
+      if (str === 'none' || str === 'transparent') return null;
+      if (str.startsWith('#')) {
+        const hex = str.slice(1);
+        const full = hex.length === 3 || hex.length === 4
+          ? hex.split('').map((c) => c + c).join('')
+          : hex;
+        if (full.length < 6) return null;
+        return [0, 2, 4].map((i) => parseInt(full.slice(i, i + 2), 16));
+      }
+      const m = str.match(/rgba?\(([^)]+)\)/);
+      if (m) {
+        const parts = m[1].split(/[,\s/]+/).filter(Boolean).map(Number);
+        if (parts.length >= 3 && parts.slice(0, 3).every((n) => Number.isFinite(n))) {
+          return parts.slice(0, 3);
+        }
+        return null;
+      }
+      return null;
+    }
+
+    function relativeLuminance(rgb) {
+      const channel = (v) => {
+        const s = v / 255;
+        return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
+      };
+      return 0.2126 * channel(rgb[0]) + 0.7152 * channel(rgb[1]) + 0.0722 * channel(rgb[2]);
+    }
+
+    function contrastRatio(a, b) {
+      const la = relativeLuminance(a);
+      const lb = relativeLuminance(b);
+      const hi = Math.max(la, lb);
+      const lo = Math.min(la, lb);
+      return (hi + 0.05) / (lo + 0.05);
+    }
+
+    // The viewport background follows the active theme, so the fallback must too.
+    function themeSurfaceAlt() {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      return isDark ? [51, 65, 85] : [241, 245, 249];
+    }
+
+    // First painted background behind the label: its own rect (edge-label chips),
+    // then ancestors, then the theme viewport color.
+    function effectiveBackground(element) {
+      const sibling = element.closest('.edgeLabel')?.querySelector('rect, .labelBkg');
+      const siblingBg = sibling ? parseColor(getComputedStyle(sibling).fill) : null;
+      if (siblingBg) return siblingBg;
+
+      let node = element;
+      while (node && node !== document.documentElement) {
+        const bg = parseColor(getComputedStyle(node).backgroundColor);
+        if (bg) return bg;
+        node = node.parentElement;
+      }
+      const fallback = parseColor(getComputedStyle(document.body).backgroundColor);
+      if (fallback) return fallback;
+      return themeSurfaceAlt();
+    }
+
+    function fixLabelContrast(card) {
+      const svg = card.querySelector('.wt-canvas svg');
+      if (!svg) return;
+      const labels = svg.querySelectorAll('.nodeLabel, .edgeLabel, foreignObject span, text');
+      labels.forEach((label) => {
+        if (!label.textContent || !label.textContent.trim()) return;
+        const style = getComputedStyle(label);
+        const fg = parseColor(style.fill !== 'none' ? style.fill : style.color)
+          || parseColor(style.color);
+        if (!fg) return;
+        const bg = effectiveBackground(label);
+        if (contrastRatio(fg, bg) >= MIN_LABEL_CONTRAST) return;
+
+        const onWhite = contrastRatio([0, 0, 0], bg);
+        const onBlack = contrastRatio([255, 255, 255], bg);
+        const replacement = onWhite >= onBlack ? '#000000' : '#ffffff';
+        label.style.setProperty('fill', replacement, 'important');
+        label.style.setProperty('color', replacement, 'important');
+        label.setAttribute('data-wt-contrast-fixed', 'true');
+      });
     }
 
     // Check TOC presence and adjust layout class

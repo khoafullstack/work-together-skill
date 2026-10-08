@@ -12,10 +12,11 @@ All HTML output is assembled strictly from the component snippets in [references
 
 ## Rules
 
-1. **Fixed Components Only.** Every generated HTML file is constructed by taking [references/components/shell.html](references/components/shell.html) and populating its slot comments (`<!-- SLOT:... -->`) with filled snippets from `references/components/`.
+1. **Fixed Components Only.** Every generated HTML file is constructed by taking [references/components/shell.html](references/components/shell.html) and populating its slot comments (`<!-- SLOT:... -->`) with filled snippets from `references/components/`. Run [scripts/assemble.mjs](scripts/assemble.mjs) to do this mechanically instead of hand-writing a script.
 2. **Valid Mermaid Syntax.** Always follow [references/syntax/](references/syntax/) for the target diagram type (flowchart, sequence, class, state, ER). Keep labels compatible with `htmlLabels: false` (use standard line breaks within quotes, do NOT use `<br>` or HTML tags).
-3. **Escaping.** When embedding Mermaid code into `<pre class="wt-source" hidden>{{mermaid_code}}</pre>`, escape `&` to `&amp;`, `<` to `&lt;`, and `>` to `&gt;`.
-4. **Confirm Before Writing.** Always present the draft Mermaid code and diagram metadata in chat and receive the user's approval before creating the HTML file.
+3. **Readable Labels in Both Themes.** Every `classDef`/`style` that sets `fill` MUST also set a `color` with at least 4.5:1 contrast. A fill without `color` inherits the theme text color, which is light in dark mode, so light pastel fills make the text disappear. See [references/syntax/flowchart.md](references/syntax/flowchart.md) section 5.
+4. **Escaping.** When embedding Mermaid code into `<pre class="wt-source" hidden>{{mermaid_code}}</pre>`, escape `&` to `&amp;`, `<` to `&lt;`, and `>` to `&gt;`.
+5. **Confirm Before Writing.** Always present the draft Mermaid code and diagram metadata in chat and receive the user's approval before creating the HTML file.
 
 ## Steps
 
@@ -67,19 +68,25 @@ Done when draft is shown in chat and confirmation is requested.
 
 - **Changes requested:** Revise the Mermaid code or structure and present the draft again.
 - **Confirmed:**
-  1. Read [references/components/README.md](references/components/README.md).
-  2. Read each component file needed from `references/components/`:
-     - `shell.html`
-     - `header.html`
-     - `toc.html` & `toc-item.html` (include TOC only if there are 2 or more diagrams; if only 1 diagram, remove `<!-- SLOT:TOC -->`)
-     - `diagram-card.html`
-     - `legend.html` & `legend-item.html` (if legend is present)
-     - `component-notes.html` & `component-note-item.html` (if component notes are present)
-     - `notes.html` (if general notes are present)
-  3. Replace placeholders `{{placeholder}}` with actual escaped values.
-  4. Inject populated snippets into the respective `<!-- SLOT:... -->` markers. Remove any unused slot markers.
-  5. Check if `./work-together/diagrams/<slug>.html` already exists; ask before overwriting if it does.
-  6. Write the final assembled file to `./work-together/diagrams/<slug>.html`.
+  1. Assemble with the script (recommended):
+     - Build a spec JSON containing the page fields and every diagram (see the spec block at the top of `scripts/assemble.mjs`).
+     - Run `node scripts/assemble.mjs < spec.json` (add `--out`/`--force` as needed) from the workspace root.
+     - Read the warnings: they flag unreadable label colors, `<br>` usage, and unknown diagram types. Fix the spec and re-run until it reports only the diagrams you intend.
+     - Skip to step 5 once it writes the file.
+  2. Assemble by hand (fallback when the script is unavailable):
+     - Read [references/components/README.md](references/components/README.md).
+     - Read each component file needed from `references/components/`:
+       - `shell.html`
+       - `header.html`
+       - `toc.html` & `toc-item.html` (include TOC only if there are 2 or more diagrams; if only 1 diagram, remove `<!-- SLOT:TOC -->`)
+       - `diagram-card.html`
+       - `legend.html` & `legend-item.html` (if legend is present)
+       - `component-notes.html` & `component-note-item.html` (if component notes are present)
+       - `notes.html` (if general notes are present)
+     - Replace placeholders `{{placeholder}}` with actual escaped values.
+     - Inject populated snippets into the respective `<!-- SLOT:... -->` markers. Remove any unused slot markers.
+  3. Check if `./work-together/diagrams/<slug>.html` already exists; ask before overwriting if it does.
+  4. Write the final assembled file to `./work-together/diagrams/<slug>.html`.
 
 Done when the HTML file exists and is validated.
 

@@ -19,6 +19,10 @@ This catalog documents the core components used to assemble a standalone Mermaid
 
 ## Assembly Process
 
+`scripts/assemble.mjs` implements every step below: it fills the placeholders, injects
+the snippets, validates the result, and writes the file. Prefer it over doing this by
+hand, and read its warnings before shipping the page.
+
 Follow these steps in exact sequence:
 
 1. **Read `shell.html`**:
@@ -54,3 +58,11 @@ Follow these steps in exact sequence:
 - `{{diagram_id}}`: Lowercase letters, digits, and hyphens only (`[a-z0-9-]+`).
 - `{{title}}`, `{{diagram_title}}`, `{{description}}`, `{{caption}}`, `{{meaning}}`: Standard plain text (escape `<` and `>`).
 - `{{notes_html}}`: Semantic HTML subset only (`<p>`, `<ul>`, `<ol>`, `<li>`, `<code>`, `<strong>`, `<em>`).
+
+## Label Contrast
+
+Node labels inherit the Mermaid theme text color unless the diagram sets an explicit
+`color`. Because the page has both a light and a dark theme, every `classDef`/`style`
+with a `fill` must also carry a `color` of at least 4.5:1 contrast. `assemble.mjs`
+warns about violations, and `shell.html` corrects unreadable labels at render time as
+a last resort.

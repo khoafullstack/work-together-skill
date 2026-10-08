@@ -78,6 +78,37 @@ flowchart LR
     Check -->|Yes| Done([Complete]):::success
 ```
 
+### Always set `color` together with `fill`
+
+The page ships a light and a dark theme. When a `classDef` or `style` sets `fill`
+but no `color`, Mermaid paints the label with the theme text color, which is dark
+in light mode and light in dark mode. A light pastel fill then gets a light label
+in dark mode and the text disappears.
+
+```mermaid
+flowchart LR
+    %% wrong: fill without color, label unreadable in dark mode
+    classDef bad fill:#dbeafe,stroke:#1d4ed8;
+    %% right: explicit label color that works in both themes
+    classDef good fill:#dbeafe,stroke:#1d4ed8,color:#0f172a;
+```
+
+Pair every fill with a label color that contrasts at least 4.5:1:
+
+| Fill | Label color |
+|---|---|
+| Light pastel (`#dbeafe`, `#dcfce7`, `#fef3c7`) | `#0f172a` |
+| Saturated dark (`#2563eb`, `#16a34a`, `#0d9488`) | `#ffffff` |
+| Neutral light (`#f1f5f9`, `#ffffff`) | `#0f172a` |
+
+A dark fill such as `#2563eb` is fine as long as its label is light: the fill stays
+dark in both themes, so `color:#ffffff` is readable everywhere.
+
+The `assemble.mjs` script warns when a `fill` has no `color`, when a fill/label pair
+falls below 4.5:1, and when a dark fill would be unreadable in light mode. The page
+also corrects unreadable labels at render time, but fix the source instead of
+relying on that safety net.
+
 ## 6. Rules & Gotchas for Static HTML / `htmlLabels: false`
 
 - **Line breaks:** DO NOT use `<br>` or `<br/>`. Use literal quoted multiline strings:
