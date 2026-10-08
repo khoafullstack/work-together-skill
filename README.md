@@ -12,6 +12,7 @@ All skills are user-invoked: you type the skill name, and no skill triggers on i
 | `/wt-plan` | Turn a request or an existing `plan.md` into a confirmed plan | `work-together/tasks/<task-slug>/plan.md` |
 | `/wt-break-tasks` | Break a confirmed plan into a checklist of file-level tasks | `work-together/tasks/<task-slug>/tasks.md` |
 | `/wt-implement` | Implement the tasks, verifying after every parent task | Code changes, updated `tasks.md` |
+| `/wt-commit` | Review staged and unstaged changes, choose one commit or logical groups, approve drafts, and confirm Git identity | Approved local commits |
 | `/wt-learn` | Record lessons from the conversation, related commits, and the user into each project's memory | `Lessons` in `work-together/projects/<project>/memory.md` |
 | `/wt-archive` | Move finished task folders into the archive, recording lessons first | `work-together/archive/<YYYY-MM-DD>-<task-slug>/` |
 | `/wt-mermaid` | Turn a request into Mermaid diagrams rendered as a standalone interactive HTML page | `work-together/diagrams/<slug>.html` |
@@ -32,6 +33,7 @@ All skills are user-invoked: you type the skill name, and no skill triggers on i
 
 `/wt-learn` can also run standalone on demand to capture learnings from any conversation.
 `/wt-mermaid` runs independently on demand whenever architecture or workflow visualizations are requested.
+`/wt-commit` runs independently after changes are ready. It reviews staged, unstaged, and untracked changes, asks whether to combine them or split them into logical commits, and waits for draft approval and username/email confirmation before staging or committing. It follows repository commit rules, defaults to Conventional Commits, and never changes Git identity or pushes.
 
 Every step that writes a file shows a draft first and waits for your confirmation.
 
@@ -51,6 +53,8 @@ skills/
 │  ├─ SKILL.md
 │  └─ templates/        tasks.md
 ├─ wt-implement/
+│  └─ SKILL.md
+├─ wt-commit/
 │  └─ SKILL.md
 ├─ wt-learn/
 │  └─ SKILL.md
@@ -96,6 +100,7 @@ Paths are relative to the workspace root. The workspace can be a monorepo, or a 
 - **Stop on deviation.** `/wt-implement` stops and asks when reality differs from the plan.
 - **Green after every parent task.** Tests, typecheck, and lint must pass before a parent task is marked done.
 - **No commits without consent.** `/wt-implement` asks once whether it may commit, and never commits without a clear yes.
+- **Review before committing.** `/wt-commit` requires approval of the exact changes and messages, then asks for username/email and checks them against the existing Git identity before committing.
 - **Archive moves, never deletes.** `/wt-archive` uses `git mv` when the folder is tracked and never commits.
 
 ## Task list syntax
