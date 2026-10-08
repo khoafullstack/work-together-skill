@@ -6,6 +6,10 @@ disable-model-invocation: true
 
 # wt-mermaid
 
+## File boundaries
+
+Create only the confirmed `./work-together/diagrams/<slug>.html`. Creating any other file, including a spec JSON, temporary files, separate Mermaid sources, exports, or additional documentation, requires an explicit user request. Keep the assembly spec in memory and pass it through standard input; keep drafts and reports in chat.
+
 Generate Mermaid diagrams and present them in a polished, standalone static HTML page viewable directly in any browser. Reply in the user's language.
 
 All HTML output is assembled strictly from the component snippets in [references/components/](references/components/), following the rules in [references/components/README.md](references/components/README.md). Never invent arbitrary HTML layout, styles, or scripts.
@@ -69,8 +73,8 @@ Done when draft is shown in chat and confirmation is requested.
 - **Changes requested:** Revise the Mermaid code or structure and present the draft again.
 - **Confirmed:**
   1. Assemble with the script (recommended):
-     - Build a spec JSON containing the page fields and every diagram (see the spec block at the top of `scripts/assemble.mjs`).
-     - Run `node scripts/assemble.mjs < spec.json` (add `--out`/`--force` as needed) from the workspace root.
+     - Build a spec JSON in memory containing the page fields and every diagram (see the spec block at the top of `scripts/assemble.mjs`).
+     - Pass the JSON directly to standard input of `node scripts/assemble.mjs` (add `--out`/`--force` as needed) from the workspace root, using the host shell's syntax without creating a spec file.
      - Read the warnings: they flag unreadable label colors, `<br>` usage, and unknown diagram types. Fix the spec and re-run until it reports only the diagrams you intend.
      - Skip to step 5 once it writes the file.
   2. Assemble by hand (fallback when the script is unavailable):

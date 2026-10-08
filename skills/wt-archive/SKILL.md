@@ -6,6 +6,10 @@ disable-model-invocation: true
 
 # wt-archive
 
+## File boundaries
+
+Move the selected folders and update their existing `plan.md` and `tasks.md` as specified below. This skill authorizes no new files; creating destination directories for the move is allowed. Creating any file, including temporary files or additional documentation, requires an explicit user request. Keep reports in chat. When invoking `wt-learn`, follow its file boundaries too.
+
 Input is zero or more task slugs or folder paths under `./work-together/tasks/`. Reply in the user's language.
 
 A task is done when its `tasks.md` has no `[ ]`, `[~]`, or `[!]`. A folder without `tasks.md` counts as not done. Never create a commit.

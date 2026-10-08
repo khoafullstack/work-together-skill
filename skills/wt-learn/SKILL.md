@@ -6,6 +6,10 @@ disable-model-invocation: true
 
 # wt-learn
 
+## File boundaries
+
+Update only the Lessons section of existing project `memory.md` files. This skill authorizes no new files. Creating any file, including temporary files or additional documentation, requires an explicit user request. Keep drafts and reports in chat.
+
 Input is optional: a task folder (`./work-together/tasks/<task-slug>` or `./work-together/archive/<date>-<task-slug>`). Without input, learn from the current conversation alone. Reply in the user's language.
 
 Lessons go only into the `## Lessons` section of `./work-together/projects/<project>/memory.md`, one line each, in the template form `- <lesson> (from `<task-slug>`, <YYYY-MM-DD>)`. Without a task folder, use `conversation` in place of the slug. A `memory.md` without a Lessons section: insert it between Conventions and Notes, as in [../wt-init/templates/memory.md](../wt-init/templates/memory.md). A project without a `memory.md`: skip it and suggest `/wt-init`.

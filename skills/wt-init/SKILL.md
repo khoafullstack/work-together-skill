@@ -6,6 +6,10 @@ disable-model-invocation: true
 
 # wt-init
 
+## File boundaries
+
+Create only `./work-together/projects/<project>/project.md` and `memory.md` for confirmed projects. Creating any other file, including temporary files or additional documentation, requires an explicit user request. Keep drafts and reports in chat and update existing output files in place.
+
 Run from the workspace root: a monorepo root, or a folder holding several repos. Reply in the user's language.
 
 Output is filled from fixed templates, never from agent-invented structure. Copy each verbatim, then fill every section. Keep headings, order, and table columns unchanged. Write `N/A` in a section that does not apply.

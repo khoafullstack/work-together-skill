@@ -6,6 +6,10 @@ disable-model-invocation: true
 
 # wt-plan
 
+## File boundaries
+
+Create only the confirmed `./work-together/tasks/<task-slug>/plan.md`. Creating any other file, including temporary files or additional documentation, requires an explicit user request. Keep drafts and reports in chat and edit an existing plan in place.
+
 Input is either a request or a path to a `plan.md`. Reply in the user's language.
 
 Output is filled from the fixed template [templates/plan.md](templates/plan.md), never from agent-invented structure. Copy it verbatim, then fill every section. Keep headings, order, and table columns unchanged. Write `N/A` in a section that does not apply.

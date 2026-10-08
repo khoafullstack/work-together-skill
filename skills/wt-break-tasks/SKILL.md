@@ -6,6 +6,10 @@ disable-model-invocation: true
 
 # wt-break-tasks
 
+## File boundaries
+
+Create only `tasks.md` next to the selected `plan.md`, after the user confirms the draft. Creating any other file, including temporary files or additional documentation, requires an explicit user request. Keep drafts and reports in chat and update an existing `tasks.md` in place.
+
 Input is the path to a `plan.md`, usually `./work-together/tasks/<task-slug>/plan.md`. Without a path, list the `plan.md` files under `./work-together/tasks/` and ask which one. Reply in the user's language.
 
 Output is filled from the fixed template [templates/tasks.md](templates/tasks.md). Copy it verbatim, then fill it. Keep headings, order, and syntax unchanged.
